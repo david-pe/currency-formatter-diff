@@ -27,17 +27,8 @@ function formatCurrencyNode(locale, currency, value) {
     }
 }
 
-async function formatCurrencySparticuz(locale, currency, value) {
-    let browser;
+async function formatCurrencySparticuz(page, locale, currency, value) {
     try {
-        browser = await puppeteer.launch({
-            executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
-            headless: "new",
-            args: ['--no-sandbox'],
-            timeout: 60000,
-        });
-
-        const page = await browser.newPage();
         const result = await page.evaluate((l, c, v) => {
             return new Intl.NumberFormat(l, {
                 style: 'currency',
@@ -49,10 +40,6 @@ async function formatCurrencySparticuz(locale, currency, value) {
     } catch (error) {
         console.error('Sparticuz/Puppeteer formatting failed:', error);
         return 'ERROR';
-    } finally {
-        if (browser) {
-            await browser.close();
-        }
     }
 }
 
