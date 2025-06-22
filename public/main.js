@@ -109,9 +109,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     const { javaCldr, javaLegacy, node } = results;
                     
-                    const nodeBrowserDiff = node !== browserResult;
-                    const javaCldrBrowserDiff = javaCldr !== browserResult;
-                    const javaCldrLegacyDiff = javaCldr !== javaLegacy;
+                    const nodeBrowserWhitespaceDiff = getWhitespaceDiff(node, browserResult);
+                    const javaCldrBrowserWhitespaceDiff = getWhitespaceDiff(javaCldr, browserResult);
+                    const javaCldrLegacyWhitespaceDiff = getWhitespaceDiff(javaCldr, javaLegacy);
+
+                    const nodeBrowserDiff = !nodeBrowserWhitespaceDiff && node !== browserResult;
+                    const javaCldrBrowserDiff = !javaCldrBrowserWhitespaceDiff && javaCldr !== browserResult;
+                    const javaCldrLegacyDiff = !javaCldrLegacyWhitespaceDiff && javaCldr !== javaLegacy;
+                    
+                    let whitespaceIndicatorAdded = false;
 
                     if (nodeBrowserDiff) {
                         cell.classList.add('mismatch-red');
@@ -119,29 +125,29 @@ document.addEventListener('DOMContentLoaded', () => {
                         cell.classList.add('mismatch-orange');
                     } else if (javaCldrLegacyDiff) {
                         cell.classList.add('mismatch-yellow');
+                    } else if (nodeBrowserWhitespaceDiff || javaCldrBrowserWhitespaceDiff || javaCldrLegacyWhitespaceDiff) {
+                        cell.textContent = '≈';
+                        whitespaceIndicatorAdded = true;
                     }
 
                     let tooltipContent = `${currency} -- ${locale}\n\nJava (CLDR):   ${javaCldr}\nJava (Legacy): ${javaLegacy}\nNode.js:       ${node}\nBrowser:       ${browserResult}`;
 
                     const diffs = [];
-                    let whitespaceDiff = getWhitespaceDiff(node, browserResult);
-                    if (whitespaceDiff) {
-                        diffs.push(`Node vs Browser: ${whitespaceDiff}`);
-                    } else if (nodeBrowserDiff) {
+                    if (nodeBrowserWhitespaceDiff) {
+                        diffs.push(`Node vs Browser: ${nodeBrowserWhitespaceDiff}`);
+                    } else if (node !== browserResult) {
                         diffs.push(`Node vs Browser:\n  '${node}'\n  '${browserResult}'`);
                     }
                     
-                    whitespaceDiff = getWhitespaceDiff(javaCldr, browserResult);
-                    if (whitespaceDiff) {
-                        diffs.push(`Java CLDR vs Browser: ${whitespaceDiff}`);
-                    } else if (javaCldrBrowserDiff) {
+                    if (javaCldrBrowserWhitespaceDiff) {
+                        diffs.push(`Java CLDR vs Browser: ${javaCldrBrowserWhitespaceDiff}`);
+                    } else if (javaCldr !== browserResult) {
                         diffs.push(`Java CLDR vs Browser:\n  '${javaCldr}'\n  '${browserResult}'`);
                     }
                     
-                    whitespaceDiff = getWhitespaceDiff(javaCldr, javaLegacy);
-                    if (whitespaceDiff) {
-                        diffs.push(`Java CLDR vs Legacy: ${whitespaceDiff}`);
-                    } else if (javaCldrLegacyDiff) {
+                    if (javaCldrLegacyWhitespaceDiff) {
+                        diffs.push(`Java CLDR vs Legacy: ${javaCldrLegacyWhitespaceDiff}`);
+                    } else if (javaCldr !== javaLegacy) {
                         diffs.push(`Java CLDR vs Legacy:\n  '${javaCldr}'\n  '${javaLegacy}'`);
                     }
 
