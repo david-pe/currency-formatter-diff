@@ -117,7 +117,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     const sparticuzBrowserDiff = !sparticuzBrowserWhitespaceDiff && sparticuz !== browserResult;
                     const nodeBrowserDiff = !nodeBrowserWhitespaceDiff && node !== browserResult;
                     const javaCldrBrowserDiff = !javaCldrBrowserWhitespaceDiff && javaCldr !== browserResult;
-                    const javaCldrLegacyDiff = !javaCldrLegacyWhitespaceDiff && javaCldr !== javaLegacy;
                     
                     let whitespaceIndicatorAdded = false;
 
@@ -127,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         cell.classList.add('mismatch-red');
                     } else if (javaCldrBrowserDiff) {
                         cell.classList.add('mismatch-orange');
-                    } else if (sparticuzBrowserWhitespaceDiff || nodeBrowserWhitespaceDiff || javaCldrBrowserWhitespaceDiff || javaCldrLegacyWhitespaceDiff) {
+                    } else if (sparticuzBrowserWhitespaceDiff || nodeBrowserWhitespaceDiff || javaCldrBrowserWhitespaceDiff) {
                         cell.textContent = '≈';
                         whitespaceIndicatorAdded = true;
                     }
