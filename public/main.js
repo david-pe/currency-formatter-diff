@@ -107,32 +107,42 @@ document.addEventListener('DOMContentLoaded', () => {
                         currencyDisplay: 'symbol'
                     }).format(1234567.899);
 
-                    const { javaCldr, javaLegacy, node } = results;
+                    const { javaCldr, javaLegacy, node, sparticuz } = results;
                     
+                    const sparticuzBrowserWhitespaceDiff = getWhitespaceDiff(sparticuz, browserResult);
                     const nodeBrowserWhitespaceDiff = getWhitespaceDiff(node, browserResult);
                     const javaCldrBrowserWhitespaceDiff = getWhitespaceDiff(javaCldr, browserResult);
                     const javaCldrLegacyWhitespaceDiff = getWhitespaceDiff(javaCldr, javaLegacy);
 
+                    const sparticuzBrowserDiff = !sparticuzBrowserWhitespaceDiff && sparticuz !== browserResult;
                     const nodeBrowserDiff = !nodeBrowserWhitespaceDiff && node !== browserResult;
                     const javaCldrBrowserDiff = !javaCldrBrowserWhitespaceDiff && javaCldr !== browserResult;
                     const javaCldrLegacyDiff = !javaCldrLegacyWhitespaceDiff && javaCldr !== javaLegacy;
                     
                     let whitespaceIndicatorAdded = false;
 
-                    if (nodeBrowserDiff) {
+                    if (sparticuzBrowserDiff) {
+                        cell.classList.add('mismatch-dark-red');
+                    } else if (nodeBrowserDiff) {
                         cell.classList.add('mismatch-red');
                     } else if (javaCldrBrowserDiff) {
                         cell.classList.add('mismatch-orange');
                     } else if (javaCldrLegacyDiff) {
                         cell.classList.add('mismatch-yellow');
-                    } else if (nodeBrowserWhitespaceDiff || javaCldrBrowserWhitespaceDiff || javaCldrLegacyWhitespaceDiff) {
+                    } else if (sparticuzBrowserWhitespaceDiff || nodeBrowserWhitespaceDiff || javaCldrBrowserWhitespaceDiff || javaCldrLegacyWhitespaceDiff) {
                         cell.textContent = '≈';
                         whitespaceIndicatorAdded = true;
                     }
 
-                    let tooltipContent = `${currency} -- ${locale}\n\nJava (CLDR):   ${javaCldr}\nJava (Legacy): ${javaLegacy}\nNode.js:       ${node}\nBrowser:       ${browserResult}`;
+                    let tooltipContent = `${currency} -- ${locale}\n\nSparticuz:     ${sparticuz}\nJava (CLDR):   ${javaCldr}\nJava (Legacy): ${javaLegacy}\nNode.js:       ${node}\nBrowser:       ${browserResult}`;
 
                     const diffs = [];
+                    if (sparticuzBrowserWhitespaceDiff) {
+                        diffs.push(`Sparticuz vs Browser: ${sparticuzBrowserWhitespaceDiff}`);
+                    } else if (sparticuz !== browserResult) {
+                        diffs.push(`Sparticuz vs Browser:\n  '${sparticuz}'\n  '${browserResult}'`);
+                    }
+                    
                     if (nodeBrowserWhitespaceDiff) {
                         diffs.push(`Node vs Browser: ${nodeBrowserWhitespaceDiff}`);
                     } else if (node !== browserResult) {
