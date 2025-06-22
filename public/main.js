@@ -14,7 +14,7 @@ function getWhitespaceDiff(s1, s2) {
     const s1Spaces = s1.replace(/[^\s]/g, '');
     const s2Spaces = s2.replace(/[^\s]/g, '');
 
-    if ((s1Spaces === ' ' && s2Spaces === '') || (s1Spaces === '' && s2Spaces === ' ')) {
+    if ((s1Spaces.length === 1 && s2Spaces.length === 0) || (s1Spaces.length === 0 && s2Spaces.length === 1)) {
         return 'SINGLE_REGULAR_SPACE';
     }
 
