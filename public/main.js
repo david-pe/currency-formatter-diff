@@ -127,8 +127,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         cell.classList.add('mismatch-red');
                     } else if (javaCldrBrowserDiff) {
                         cell.classList.add('mismatch-orange');
-                    } else if (javaCldrLegacyDiff) {
-                        cell.classList.add('mismatch-yellow');
                     } else if (sparticuzBrowserWhitespaceDiff || nodeBrowserWhitespaceDiff || javaCldrBrowserWhitespaceDiff || javaCldrLegacyWhitespaceDiff) {
                         cell.textContent = '≈';
                         whitespaceIndicatorAdded = true;

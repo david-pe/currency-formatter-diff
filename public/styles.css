@@ -63,8 +63,8 @@ tbody tr:nth-of-type(even) {
     background-color: #ffeedd;
 }
 
-.mismatch-yellow {
-    background-color: #ffffdd;
+.mismatch-dark-red {
+    background-color: #ffcccc;
 }
 
 .tooltip {
