@@ -31,10 +31,10 @@ async function formatCurrencySparticuz(locale, currency, value) {
     let browser;
     try {
         browser = await puppeteer.launch({
-            args: chromium.args,
-            defaultViewport: chromium.defaultViewport,
-            executablePath: await chromium.executablePath(),
-            headless: chromium.headless,
+            executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+            headless: "new",
+            args: ['--no-sandbox'],
+            timeout: 60000,
         });
 
         const page = await browser.newPage();

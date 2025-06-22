@@ -22,6 +22,19 @@ const localeNames = JSON.parse(fs.readFileSync(path.join(__dirname, 'wix-locales
 const currencyNames = JSON.parse(fs.readFileSync(path.join(__dirname, 'wix-currencies.json'), 'utf8'));
 
 const allLocales = Object.keys(localeNames);
+
+function getValidLocales(locales) {
+    const validLocales = [];
+    for (const locale of locales) {
+        try {
+            new Intl.Locale(locale);
+            validLocales.push(locale);
+        } catch (e) {
+            // Invalid locale tag
+        }
+    }
+    return validLocales;
+}
 const allCurrencies = Object.keys(currencyNames);
 
 const sortWithDominance = (arr, dominanceList, keyExtractor = (item => item)) => {
@@ -38,7 +51,7 @@ const sortWithDominance = (arr, dominanceList, keyExtractor = (item => item)) =>
     });
 };
 
-const sortedLocales = sortWithDominance(allLocales, dominantLanguageCodes, locale => locale.split('-')[0]);
+const sortedLocales = sortWithDominance(getValidLocales(allLocales), dominantLanguageCodes, locale => locale.split('-')[0]);
 const sortedCurrencies = sortWithDominance(allCurrencies, dominantCurrencies);
 
 app.get('/api/meta', (req, res) => {
