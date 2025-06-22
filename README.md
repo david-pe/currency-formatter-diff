@@ -1,35 +1,22 @@
 # Wix Currency and Locale Formatter Comparison
 
-This project provides a static HTML file to compare currency and locale formatting between Java (Legacy), Java (CLDR), Node.js (ICU), and Browser (ICU).
+This project provides a web-based tool to compare currency and locale formatting between Node.js and Chromium, using data fetched from Wix APIs.
 
-## Viewing the Comparison
+## Project Structure
 
-To view the comparison, you need a simple web server.
+The `public` directory contains the front-end application files:
 
-1.  **Install dependencies:**
-    ```bash
-    npm install
-    ```
+```
+public/
+├── index.html
+├── main.js
+├── sse-worker.js
+└── styles.css
+```
 
-2.  **Start the server:**
-    ```bash
-    node server.js
-    ```
+The application fetches currency and locale data, which is stored in:
 
-3.  Open your browser and navigate to `http://localhost:3000`.
+- `wix-currencies.json`
+- `wix-locales.json`
 
-The file `comparison.html` is a large, self-contained file with all the comparison data.
-
-**Note:** The process to generate this HTML file is very time-consuming. It is recommended to use the pre-built `comparison.html` directly.
-
-## Viewing on GitHub Pages
-
-This repository is set up with GitHub Pages to allow viewing the `comparison.html` file directly in your browser.
-
-1.  Navigate to the **Settings** tab of this repository.
-2.  Go to the **Pages** section.
-3.  Under "Build and deployment", ensure the source is set to **Deploy from a branch**.
-4.  Select the `gh-pages` branch and `/ (root)` folder, then save.
-5.  Your page will be available at the URL provided by GitHub.
-
-The URL will be: https://david-pe.github.io/currency-formatter-diff/ 
+The server-side logic is in `server.js`, and the formatting logic is handled by `format-currency.js`. 
