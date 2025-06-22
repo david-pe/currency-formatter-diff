@@ -7,18 +7,18 @@ function getWhitespaceDiff(s1, s2) {
         return null;
     }
 
-    const s1Spaces = s1.replace(/[^\s]/g, '');
-    const s2Spaces = s2.replace(/[^\s]/g, '');
-
-    if (s1Spaces.length !== s2Spaces.length) {
+    if (s1 === s2) {
         return null;
     }
 
-    if (s1Spaces !== s2Spaces) {
-        return `differs only by whitespace:\n'${s1}' (codes: ${getCharCodes(s1Spaces)})\n'${s2}' (codes: ${getCharCodes(s2Spaces)})`;
+    const s1Spaces = s1.replace(/[^\s]/g, '');
+    const s2Spaces = s2.replace(/[^\s]/g, '');
+
+    if ((s1Spaces === ' ' && s2Spaces === '') || (s1Spaces === '' && s2Spaces === ' ')) {
+        return 'SINGLE_REGULAR_SPACE';
     }
 
-    return null;
+    return `differs only by whitespace:\n'${s1}' (codes: ${getCharCodes(s1Spaces)})\n'${s2}' (codes: ${getCharCodes(s2Spaces)})`;
 }
 
 function createRow(currency, locales) {
@@ -114,6 +114,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     const javaCldrBrowserWhitespaceDiff = getWhitespaceDiff(javaCldr, browserResult);
                     const javaCldrLegacyWhitespaceDiff = getWhitespaceDiff(javaCldr, javaLegacy);
 
+                    const isSparticuzSingleSpace = sparticuzBrowserWhitespaceDiff === 'SINGLE_REGULAR_SPACE';
+                    const isNodeSingleSpace = nodeBrowserWhitespaceDiff === 'SINGLE_REGULAR_SPACE';
+                    const isJavaCldrSingleSpace = javaCldrBrowserWhitespaceDiff === 'SINGLE_REGULAR_SPACE';
+
                     const sparticuzBrowserDiff = !sparticuzBrowserWhitespaceDiff && sparticuz !== browserResult;
                     const nodeBrowserDiff = !nodeBrowserWhitespaceDiff && node !== browserResult;
                     const javaCldrBrowserDiff = !javaCldrBrowserWhitespaceDiff && javaCldr !== browserResult;
@@ -126,33 +130,42 @@ document.addEventListener('DOMContentLoaded', () => {
                         cell.classList.add('mismatch-red');
                     } else if (javaCldrBrowserDiff) {
                         cell.classList.add('mismatch-orange');
+                    } else if (isSparticuzSingleSpace || isNodeSingleSpace || isJavaCldrSingleSpace) {
+                        cell.textContent = '⌴';
                     } else if (sparticuzBrowserWhitespaceDiff || nodeBrowserWhitespaceDiff || javaCldrBrowserWhitespaceDiff) {
                         cell.textContent = '≈';
-                        whitespaceIndicatorAdded = true;
                     }
 
                     let tooltipContent = `${currency} -- ${locale}\n\nSparticuz:     ${sparticuz}\nJava (CLDR):   ${javaCldr}\nJava (Legacy): ${javaLegacy}\nNode.js:       ${node}\nBrowser:       ${browserResult}`;
 
                     const diffs = [];
-                    if (sparticuzBrowserWhitespaceDiff) {
+                    if (sparticuzBrowserWhitespaceDiff === 'SINGLE_REGULAR_SPACE') {
+                        diffs.push(`Sparticuz vs Browser: differs by a single space`);
+                    } else if (sparticuzBrowserWhitespaceDiff) {
                         diffs.push(`Sparticuz vs Browser: ${sparticuzBrowserWhitespaceDiff}`);
                     } else if (sparticuz !== browserResult) {
                         diffs.push(`Sparticuz vs Browser:\n  '${sparticuz}'\n  '${browserResult}'`);
                     }
                     
-                    if (nodeBrowserWhitespaceDiff) {
+                    if (nodeBrowserWhitespaceDiff === 'SINGLE_REGULAR_SPACE') {
+                        diffs.push(`Node vs Browser: differs by a single space`);
+                    } else if (nodeBrowserWhitespaceDiff) {
                         diffs.push(`Node vs Browser: ${nodeBrowserWhitespaceDiff}`);
                     } else if (node !== browserResult) {
                         diffs.push(`Node vs Browser:\n  '${node}'\n  '${browserResult}'`);
                     }
                     
-                    if (javaCldrBrowserWhitespaceDiff) {
+                    if (javaCldrBrowserWhitespaceDiff === 'SINGLE_REGULAR_SPACE') {
+                        diffs.push(`Java CLDR vs Browser: differs by a single space`);
+                    } else if (javaCldrBrowserWhitespaceDiff) {
                         diffs.push(`Java CLDR vs Browser: ${javaCldrBrowserWhitespaceDiff}`);
                     } else if (javaCldr !== browserResult) {
                         diffs.push(`Java CLDR vs Browser:\n  '${javaCldr}'\n  '${browserResult}'`);
                     }
                     
-                    if (javaCldrLegacyWhitespaceDiff) {
+                    if (javaCldrLegacyWhitespaceDiff === 'SINGLE_REGULAR_SPACE') {
+                        diffs.push(`Java CLDR vs Legacy: differs by a single space`);
+                    } else if (javaCldrLegacyWhitespaceDiff) {
                         diffs.push(`Java CLDR vs Legacy: ${javaCldrLegacyWhitespaceDiff}`);
                     } else if (javaCldr !== javaLegacy) {
                         diffs.push(`Java CLDR vs Legacy:\n  '${javaCldr}'\n  '${javaLegacy}'`);
