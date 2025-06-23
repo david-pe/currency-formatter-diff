@@ -35,6 +35,15 @@ function getValidLocales(locales) {
     }
     return validLocales;
 }
+
+function detectBrowser(userAgent) {
+    if (!userAgent) return 'chromium';
+    const ua = userAgent.toLowerCase();
+    if (ua.includes('firefox')) return 'firefox';
+    if (ua.includes('safari') && !ua.includes('chrome')) return 'webkit';
+    return 'chromium';
+}
+
 const allCurrencies = Object.keys(currencyNames);
 
 const sortWithDominance = (arr, dominanceList, keyExtractor = (item => item)) => {
@@ -69,6 +78,9 @@ app.get('/api/stream', (req, res) => {
     res.setHeader('Connection', 'keep-alive');
     res.flushHeaders();
 
+    const userAgent = req.headers['user-agent'];
+    const detectedBrowser = detectBrowser(userAgent);
+
     const currencies = [...sortedCurrencies];
     const numWorkers = Math.min(os.cpus().length, currencies.length);
     let finishedWorkers = 0;
@@ -79,6 +91,7 @@ app.get('/api/stream', (req, res) => {
                 currency,
                 locales: sortedLocales,
                 value: COMPARISON_VALUE,
+                browserName: detectedBrowser,
             },
         });
 

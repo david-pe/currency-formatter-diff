@@ -1,8 +1,5 @@
 const { execSync } = require('child_process');
-const chromium = require('@sparticuz/chromium');
-const puppeteer = require('puppeteer-core');
-
-chromium.setHeadlessMode = true;
+const { getBrowserFormat } = require('./browser-format');
 
 function formatCurrencyJava(locale, currency, value, useCldr) {
     try {
@@ -27,20 +24,13 @@ function formatCurrencyNode(locale, currency, value) {
     }
 }
 
-async function formatCurrencySparticuz(page, locale, currency, value) {
+async function formatCurrencyPlaywright(browserName, locale, currency, value) {
     try {
-        const result = await page.evaluate((l, c, v) => {
-            return new Intl.NumberFormat(l, {
-                style: 'currency',
-                currency: c,
-                currencyDisplay: 'symbol'
-            }).format(v);
-        }, locale, currency, value);
-        return result;
+        return await getBrowserFormat(browserName, locale, currency, value);
     } catch (error) {
-        console.error('Sparticuz/Puppeteer formatting failed:', error);
+        console.error(`Playwright formatting failed for ${browserName}:`, error);
         return 'ERROR';
     }
 }
 
-module.exports = { formatCurrencyJava, formatCurrencyNode, formatCurrencySparticuz };
+module.exports = { formatCurrencyJava, formatCurrencyNode, formatCurrencyPlaywright };

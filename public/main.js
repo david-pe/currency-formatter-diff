@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
 
-                const { currency, locale, results } = cellData;
+                const { currency, locale, results, browserName } = cellData;
                 const cell = cellMap.get(`${currency}-${locale}`);
 
                 if (cell) {
@@ -107,44 +107,44 @@ document.addEventListener('DOMContentLoaded', () => {
                         currencyDisplay: 'symbol'
                     }).format(1234567.899);
 
-                    const { javaCldr, javaLegacy, node, sparticuz } = results;
+                    const { javaCldr, javaLegacy, node, playwright } = results;
                     
-                    const sparticuzBrowserWhitespaceDiff = getWhitespaceDiff(sparticuz, browserResult);
+                    const playwrightBrowserWhitespaceDiff = getWhitespaceDiff(playwright, browserResult);
                     const nodeBrowserWhitespaceDiff = getWhitespaceDiff(node, browserResult);
                     const javaCldrBrowserWhitespaceDiff = getWhitespaceDiff(javaCldr, browserResult);
                     const javaCldrLegacyWhitespaceDiff = getWhitespaceDiff(javaCldr, javaLegacy);
 
-                    const isSparticuzSingleSpace = sparticuzBrowserWhitespaceDiff === 'SINGLE_REGULAR_SPACE';
+                    const isPlaywrightSingleSpace = playwrightBrowserWhitespaceDiff === 'SINGLE_REGULAR_SPACE';
                     const isNodeSingleSpace = nodeBrowserWhitespaceDiff === 'SINGLE_REGULAR_SPACE';
                     const isJavaCldrSingleSpace = javaCldrBrowserWhitespaceDiff === 'SINGLE_REGULAR_SPACE';
 
-                    const sparticuzBrowserDiff = !sparticuzBrowserWhitespaceDiff && sparticuz !== browserResult;
+                    const playwrightBrowserDiff = !playwrightBrowserWhitespaceDiff && playwright !== browserResult;
                     const nodeBrowserDiff = !nodeBrowserWhitespaceDiff && node !== browserResult;
                     const javaCldrBrowserDiff = !javaCldrBrowserWhitespaceDiff && javaCldr !== browserResult;
                     
                     let whitespaceIndicatorAdded = false;
 
-                    if (sparticuzBrowserDiff) {
+                    if (playwrightBrowserDiff) {
                         cell.classList.add('mismatch-dark-red');
                     } else if (nodeBrowserDiff) {
                         cell.classList.add('mismatch-red');
                     } else if (javaCldrBrowserDiff) {
                         cell.classList.add('mismatch-orange');
-                    } else if (isSparticuzSingleSpace || isNodeSingleSpace || isJavaCldrSingleSpace) {
+                    } else if (isPlaywrightSingleSpace || isNodeSingleSpace || isJavaCldrSingleSpace) {
                         cell.textContent = '⌴';
-                    } else if (sparticuzBrowserWhitespaceDiff || nodeBrowserWhitespaceDiff || javaCldrBrowserWhitespaceDiff) {
+                    } else if (playwrightBrowserWhitespaceDiff || nodeBrowserWhitespaceDiff || javaCldrBrowserWhitespaceDiff) {
                         cell.textContent = '≈';
                     }
 
-                    let tooltipContent = `${currency} -- ${locale}\n\nSparticuz:     ${sparticuz}\nJava (CLDR):   ${javaCldr}\nJava (Legacy): ${javaLegacy}\nNode.js:       ${node}\nBrowser:       ${browserResult}`;
+                    let tooltipContent = `${currency} -- ${locale}\n\nPlaywright (${browserName}): ${playwright}\nJava (CLDR):   ${javaCldr}\nJava (Legacy): ${javaLegacy}\nNode.js:       ${node}\nBrowser:       ${browserResult}`;
 
                     const diffs = [];
-                    if (sparticuzBrowserWhitespaceDiff === 'SINGLE_REGULAR_SPACE') {
-                        diffs.push(`Sparticuz vs Browser: differs by a single space`);
-                    } else if (sparticuzBrowserWhitespaceDiff) {
-                        diffs.push(`Sparticuz vs Browser: ${sparticuzBrowserWhitespaceDiff}`);
-                    } else if (sparticuz !== browserResult) {
-                        diffs.push(`Sparticuz vs Browser:\n  '${sparticuz}'\n  '${browserResult}'`);
+                    if (playwrightBrowserWhitespaceDiff === 'SINGLE_REGULAR_SPACE') {
+                        diffs.push(`Playwright (${browserName}) vs Browser: differs by a single space`);
+                    } else if (playwrightBrowserWhitespaceDiff) {
+                        diffs.push(`Playwright (${browserName}) vs Browser: ${playwrightBrowserWhitespaceDiff}`);
+                    } else if (playwright !== browserResult) {
+                        diffs.push(`Playwright (${browserName}) vs Browser:\n  '${playwright}'\n  '${browserResult}'`);
                     }
                     
                     if (nodeBrowserWhitespaceDiff === 'SINGLE_REGULAR_SPACE') {
@@ -155,18 +155,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         diffs.push(`Node vs Browser:\n  '${node}'\n  '${browserResult}'`);
                     }
                     
-                    if (javaCldrBrowserWhitespaceDiff === 'SINGLE_REGULAR_SPACE') {
-                        diffs.push(`Java CLDR vs Browser: differs by a single space`);
-                    } else if (javaCldrBrowserWhitespaceDiff) {
-                        diffs.push(`Java CLDR vs Browser: ${javaCldrBrowserWhitespaceDiff}`);
-                    } else if (javaCldr !== browserResult) {
-                        diffs.push(`Java CLDR vs Browser:\n  '${javaCldr}'\n  '${browserResult}'`);
-                    }
-                    
                     if (javaCldrLegacyWhitespaceDiff === 'SINGLE_REGULAR_SPACE') {
                         diffs.push(`Java CLDR vs Legacy: differs by a single space`);
                     } else if (javaCldrLegacyWhitespaceDiff) {
-                        diffs.push(`Java CLDR vs Legacy: ${javaCldrLegacyWhitespaceDiff}`);
+                        diffs.push(`Java CLDR vs Legacy:\n  '${javaCldr}'\n  '${javaLegacy}'`);
                     } else if (javaCldr !== javaLegacy) {
                         diffs.push(`Java CLDR vs Legacy:\n  '${javaCldr}'\n  '${javaLegacy}'`);
                     }
